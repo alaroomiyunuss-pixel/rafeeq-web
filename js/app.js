@@ -209,18 +209,25 @@ function scrollToSearch() { $('search-area')?.scrollIntoView({behavior:'smooth'}
 /* ══════════════════════════════════════
    AUTH
 ══════════════════════════════════════ */
+function showFormAlert(id, msg, type='er') {
+  const el = $(id); if (!el) return;
+  el.className = 'form-alert ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
 async function doLogin() {
   const u = gv('l-u').trim(), p = gv('l-p').trim();
-  if (!u || p.length < 4) { toast('تحقق من البيانات المدخلة','wa'); return; }
+  if (!u || p.length < 4) { showFormAlert('login-alert','يرجى إدخال بيانات صحيحة'); return; }
   setBtn('l-btn', true, '<span class="spin"></span> جاري الدخول...');
-  await sleep(700);
-  let user = null;
+  await sleep(600);
   const all = await DB.getAll('users');
-  user = all.find(x => x.phone===u || x.email===u);
+  let user = all.find(x => x.phone===u || x.email===u);
   if (!user) {
-    const role = u.toLowerCase().includes('admin')?'admin':u.toLowerCase().includes('drv')||u.toLowerCase().includes('driver')?'driver':'passenger';
-    user = {id:'u'+Date.now(),name:role==='admin'?'المدير العام':role==='driver'?'سائق جديد':'مسافر جديد',phone:u,email:'',role,verified:false,created:new Date().toISOString()};
-    await DB.put('users', user);
+    showFormAlert('login-alert','❌ لم نجد حساباً بهذه البيانات. تحقق من رقم الجوال أو البريد الإلكتروني.');
+    setBtn('l-btn', false, 'تسجيل الدخول');
+    return;
   }
   await setSession(user, user.role);
   toast('مرحباً، '+user.name+'!','ok');
@@ -278,25 +285,57 @@ async function doLogout() {
   setTimeout(()=>go('h'),350);
 }
 
+async function doForgotPassword() {
+  const email = gv('fp-email').trim();
+  if (!email) { showFormAlert('fp-err','يرجى إدخال البريد الإلكتروني أولاً'); return; }
+  hide('fp-err'); hide('fp-ok');
+  const all = await DB.getAll('users');
+  const user = all.find(x => x.email === email);
+  if (!user) { showFormAlert('fp-err','❌ لم يتم العثور على حساب بهذا البريد الإلكتروني.'); return; }
+  show('fp-ok');
+  setTimeout(() => { hide('fp-ok'); closeMo('fp'); sv('fp-email',''); }, 4000);
+}
+
 /* ══════════════════════════════════════
    UI UPDATE
 ══════════════════════════════════════ */
 function updateUI() {
   if (!S.user) return;
   const n = S.user.name||'م', i = n[0]||'م';
-  setText('p-avd', i+'<div class="p-vb">✓</div>');
-  setText('d-avd', i+'<div class="p-vb">✓</div>');
+  setText('p-avd', i+'<div class="dash-vb">✓</div>');
+  setText('d-avd', i+'<div class="dash-vb">✓</div>');
   setText('p-name', n); setText('d-name', n);
   const active = S.bookings.filter(b=>b.status==='upcoming');
   setText('p-st1', S.bookings.length);
-  setText('p-h1', active.length ? active.length+' رحلة قادمة' : 'لا توجد رحلات قادمة');
-  const unread = S.notifs.filter(n=>!n.read).length;
-  setText('p-h2', unread ? unread+' إشعار غير مقروء' : 'لا توجد إشعارات');
+  const unread = S.notifs.filter(x=>!x.read).length;
   if(unread){show('p-nd');show('home-nd');}else{hide('p-nd');hide('home-nd');}
+  // Upcoming trip widget for passenger
+  const nextBk = active[0];
+  const uw = $('p-upcoming-widget');
+  if (uw) {
+    if (nextBk) {
+      uw.style.display = 'block';
+      const df = nextBk.date ? new Date(nextBk.date+'T00:00').toLocaleDateString('ar-SA',{weekday:'short',day:'numeric',month:'short'}) : nextBk.date;
+      setText('taw-title', '🔔 رحلة قادمة: '+nextBk.from+' → '+nextBk.to);
+      setText('taw-details', df+' · '+nextBk.time+' · '+nextBk.driver);
+    } else {
+      uw.style.display = 'none';
+    }
+  }
+  // Driver stats
   const myT = S.trips.filter(t=>t.dId===S.user.id||t.dId==='d1');
   setText('d-h1', myT.length ? myT.length+' رحلة منشورة' : 'لم تضف رحلات بعد');
   setText('d-st1', myT.filter(t=>t.status==='active').length);
+  // Driver earnings
+  DB.getAll('bookings').then(all => {
+    const myIds = new Set(myT.map(t=>t.id));
+    const earn = all.filter(b=>myIds.has(b.tripId)&&b.status!=='cancelled').reduce((s,b)=>s+(b.price||0),0);
+    const newBk = all.filter(b=>myIds.has(b.tripId)&&b.status==='upcoming').length;
+    setText('d-earn', earn.toLocaleString());
+    setText('d-bk-cnt', newBk);
+  });
   updateCommBanner();
+  checkUpcomingTrips();
 }
 
 function updateNavAvatar() {
@@ -677,18 +716,95 @@ function getMyLocation(){
   },()=>toast('تعذّر تحديد الموقع','er'));
 }
 
+/* ══════════════════════════════════════
+   WIZARD — 3-Step Add Trip
+══════════════════════════════════════ */
+const WIZARD = {
+  step: 1,
+  titles: ['🗺️ المسار', '🚗 التفاصيل', '✅ التأكيد'],
+  go(s) {
+    for (let i=1;i<=3;i++) {
+      const el = $('wz-s'+i); if(el) el.style.display = i===s ? 'block' : 'none';
+      const stp = $('stp-'+i); if(!stp) continue;
+      stp.classList.toggle('active', i<=s);
+      stp.classList.toggle('done', i<s);
+    }
+    const bar1=$('stp-bar-1'), bar2=$('stp-bar-2');
+    if(bar1) bar1.classList.toggle('done', s>1);
+    if(bar2) bar2.classList.toggle('done', s>2);
+    this.step = s;
+    const prev=$('wz-prev'), next=$('wz-next');
+    if(prev) prev.style.display = s===1 ? 'none' : 'inline-flex';
+    if(next) { next.textContent = s===3 ? '🚀 نشر الرحلة' : 'التالي ←'; next.onclick = s===3 ? submitTrip : ()=>WIZARD.next(); }
+    setText('wz-title', this.titles[s-1]);
+    if(s===3) this.renderSummary();
+  },
+  next() {
+    if(this.step===1) {
+      const from=gv('at-f')||gv('at-f-txt').trim(), to=gv('at-t')||gv('at-t-txt').trim(), date=gv('at-d');
+      if(!from||!to||!date){toast('يرجى اختيار المدن والتاريخ','wa');return;}
+      if(SA_SET.has(from)&&SA_SET.has(to)){toast('⛔ لا يُسمح بالرحلات الداخلية السعودية','er');return;}
+      this.go(2);
+    } else if(this.step===2) {
+      const price=parseInt(gv('at-p')), seats=parseInt(gv('at-s'));
+      if(!price||price<1){toast('يرجى إدخال السعر','wa');return;}
+      if(!seats||seats<1){toast('يرجى إدخال عدد المقاعد','wa');return;}
+      this.go(3);
+    }
+  },
+  prev() { if(this.step>1) this.go(this.step-1); },
+  selType(type, el) {
+    document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('on'));
+    el.classList.add('on'); sv('at-tp', type);
+  },
+  selLuggage(val, el) {
+    document.querySelectorAll('.lg-btn').forEach(b=>b.classList.remove('on'));
+    el.classList.add('on'); sv('at-l', val);
+  },
+  renderSummary() {
+    const from=gv('at-f')||gv('at-f-txt').trim(), to=gv('at-t')||gv('at-t-txt').trim();
+    const date=gv('at-d'), time=gv('at-tm'), price=gv('at-p'), seats=gv('at-s'), vehicle=gv('at-v');
+    const df = date ? new Date(date+'T00:00').toLocaleDateString('ar-SA',{weekday:'long',day:'numeric',month:'long'}) : '-';
+    setText('wz-summary', `<div class="sum-row"><span>المسار</span><span>${from} → ${to}</span></div><div class="sum-row"><span>التاريخ</span><span>${df} · ${time}</span></div><div class="sum-row"><span>السعر</span><span>${price} ر.س / مقعد</span></div><div class="sum-row"><span>المقاعد</span><span>${seats} مقعد</span></div><div class="sum-row"><span>المركبة</span><span>${vehicle||'-'}</span></div>`);
+  },
+  reset() {
+    this.go(1);
+    ['at-f-txt','at-t-txt','at-f','at-t','at-d','at-p','at-v','at-sp','at-n','at-mp-addr'].forEach(id=>sv(id,''));
+    sv('at-tm','07:00'); sv('at-s','4'); sv('at-tp','car'); sv('at-l','مسموح 20 كجم');
+    document.querySelectorAll('.vt-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
+    document.querySelectorAll('.lg-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
+  }
+};
+
+/* ══════════════════════════════════════
+   SMART NOTIFICATIONS (2hr check)
+══════════════════════════════════════ */
+function checkUpcomingTrips() {
+  if(!S.user || !S.bookings.length) return;
+  const now = new Date();
+  S.bookings.filter(b=>b.status==='upcoming').forEach(b=>{
+    if(!b.date||!b.time) return;
+    const tripTime = new Date(b.date+'T'+b.time);
+    const diffHrs = (tripTime - now) / 3600000;
+    const key = 'notified_'+b.id;
+    if(diffHrs>0 && diffHrs<2 && !localStorage.getItem(key)) {
+      toast(`🔔 رحلتك ${b.from} → ${b.to} خلال أقل من ساعتين!`,'wa');
+      localStorage.setItem(key,'1');
+    }
+  });
+}
+setInterval(checkUpcomingTrips, 60000);
+
 async function submitTrip(){
   const from=gv('at-f')||gv('at-f-txt').trim();
   const to=gv('at-t')||gv('at-t-txt').trim();
   if(from&&to&&SA_SET.has(from)&&SA_SET.has(to)){toast('⛔ لا يُسمح بالرحلات الداخلية السعودية','er');return;}
-  const meet=buildMeetPoint();
   const trip={
     id:'RF-'+Date.now(), from, to, date:gv('at-d'), time:gv('at-tm'),
     price:parseInt(gv('at-p'))||0, seats:parseInt(gv('at-s'))||4, total:parseInt(gv('at-s'))||4,
     driver:S.user?.name||'السائق', dId:S.user?.id||'d1', rating:0, trips:0,
     luggage:gv('at-l'), type:gv('at-tp')||'car', vehicle:gv('at-v'),
-    meet, meetType:S.meetTab, stops:gv('at-sp'), notes:gv('at-n'), status:'active',
-    ts:Date.now()
+    meet:gv('at-mp-addr'), stops:gv('at-sp'), notes:gv('at-n'), status:'active', ts:Date.now()
   };
   if(!trip.from||!trip.to||!trip.date||!trip.price){toast('يرجى ملء: المدن، التاريخ، السعر','wa');return;}
   await DB.put('trips', trip);
@@ -696,7 +812,7 @@ async function submitTrip(){
   if(!window._tripsMap) window._tripsMap={};
   window._tripsMap[trip.id]=trip;
   renderTrips(S.trips);
-  closeMo('at'); setMeetTab('addr');
+  closeMo('at'); WIZARD.reset();
   toast('✅ تم نشر الرحلة بنجاح!','ok');
   updateUI();
 }

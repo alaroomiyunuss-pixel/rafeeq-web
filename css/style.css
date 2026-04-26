@@ -332,3 +332,95 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   .hero h1{font-size:19px}
   .s-swap-row{gap:8px}
 }
+
+/* ═══════════════════════════════════════════
+   FORM ALERT (inline error/success)
+═══════════════════════════════════════════ */
+.form-alert{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;margin-bottom:13px;display:none;animation:fadeIn .2s ease}
+.form-alert.er{background:#fff0f0;color:var(--er);border:1.5px solid #ffd0d0}
+.form-alert.ok{background:#e8fff5;color:var(--ok);border:1.5px solid #b2f0d8}
+.form-alert.wa{background:#fff8e8;color:var(--warn);border:1.5px solid #ffd8a8}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD HEADER
+═══════════════════════════════════════════ */
+.dash-header{background:linear-gradient(135deg,var(--black),#1a2a3a);padding:20px 16px 18px;display:flex;align-items:center;gap:13px}
+.dash-av{width:50px;height:50px;border-radius:50%;background:var(--mint);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:var(--black);flex-shrink:0;position:relative}
+.dash-vb{position:absolute;bottom:0;right:0;width:16px;height:16px;background:var(--ok);border-radius:50%;border:2px solid var(--black);font-size:8px;display:flex;align-items:center;justify-content:center;color:#fff}
+.dash-info{flex:1}
+.dash-name{font-size:16px;font-weight:900;color:#fff}
+.dash-role{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+.dash-bell{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;position:relative;flex-shrink:0}
+
+/* ═══════════════════════════════════════════
+   QUICK ACTIONS GRID
+═══════════════════════════════════════════ */
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.qa-btn{background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px 6px;text-align:center;cursor:pointer;transition:.15s;font-family:'Cairo',sans-serif}
+.qa-btn:active{transform:scale(.93);background:var(--bg)}
+.qa-btn .qa-ic{font-size:20px;margin-bottom:5px}
+.qa-btn .qa-lb{font-size:10px;font-weight:800;color:var(--sub)}
+
+/* ═══════════════════════════════════════════
+   UPCOMING TRIP WIDGET
+═══════════════════════════════════════════ */
+.trip-alert-widget{background:linear-gradient(135deg,#0d2137,#1a3a52);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.taw-icon{font-size:28px;flex-shrink:0}
+.taw-info{flex:1}
+.taw-title{font-size:13px;font-weight:900;color:#fff;margin-bottom:3px}
+.taw-details{font-size:11px;color:rgba(255,255,255,.6)}
+
+/* ═══════════════════════════════════════════
+   ADD TRIP BUTTON (Driver CTA)
+═══════════════════════════════════════════ */
+.add-trip-btn{width:100%;background:linear-gradient(135deg,var(--black),#1a2a3a);border:none;border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;font-family:'Cairo',sans-serif;color:#fff;text-align:right;transition:.15s}
+.add-trip-btn:active{transform:scale(.98)}
+.add-trip-btn .atb-ic{width:44px;height:44px;background:var(--mint);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--black);flex-shrink:0}
+
+/* ═══════════════════════════════════════════
+   EARNINGS BAR (Driver)
+═══════════════════════════════════════════ */
+.earn-bar{background:#fff;border-radius:13px;border:1px solid var(--border);display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;overflow:hidden}
+.earn-item{padding:14px 8px;text-align:center}
+.earn-item .ev{font-size:18px;font-weight:900;display:block;margin-bottom:2px}
+.earn-item .el{font-size:10px;color:var(--sub);font-weight:700}
+.earn-divider{background:var(--border)}
+
+/* ═══════════════════════════════════════════
+   WIZARD STEPPER
+═══════════════════════════════════════════ */
+.stepper{display:flex;align-items:center;margin-bottom:22px}
+.stp{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.stp-num{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--sub);transition:.25s;background:#fff}
+.stp-lbl{font-size:10px;font-weight:800;color:var(--sub);transition:.25s}
+.stp.active .stp-num{border-color:var(--black);background:var(--black);color:#fff}
+.stp.active .stp-lbl{color:var(--black)}
+.stp.done .stp-num{border-color:var(--ok);background:var(--ok);color:#fff}
+.stp.done .stp-lbl{color:var(--ok)}
+.stp-bar{flex:1;height:2px;background:var(--border);margin:0 6px;margin-bottom:14px;transition:.25s}
+.stp-bar.done{background:var(--ok)}
+
+/* ═══════════════════════════════════════════
+   VEHICLE TYPE SELECTOR
+═══════════════════════════════════════════ */
+.vehicle-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:13px}
+.vt-btn{padding:14px 8px;border-radius:11px;border:2px solid var(--border);background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;font-size:11px;font-weight:800;color:var(--sub);transition:.15s;text-align:center;line-height:1.6}
+.vt-btn.on{border-color:var(--black);background:var(--black);color:#fff}
+.vt-btn:active{transform:scale(.95)}
+
+/* ═══════════════════════════════════════════
+   LUGGAGE OPTIONS
+═══════════════════════════════════════════ */
+.luggage-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:6px}
+.lg-btn{padding:9px 8px;border-radius:9px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;color:var(--sub);transition:.15s}
+.lg-btn.on{border-color:var(--black);background:var(--black);color:#fff}
+
+/* ═══════════════════════════════════════════
+   TRIP SUMMARY CARD (Wizard step 3)
+═══════════════════════════════════════════ */
+.trip-summary-card{background:var(--bg);border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid var(--border)}
+.sum-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.sum-row:last-child{border-bottom:none}
+.sum-row span:first-child{color:var(--sub);font-weight:700}
+.sum-row span:last-child{font-weight:900}
+

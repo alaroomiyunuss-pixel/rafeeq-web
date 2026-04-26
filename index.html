@@ -168,8 +168,9 @@
         <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer">
           <input type="checkbox" id="l-rem" style="accent-color:var(--black);width:14px;height:14px"> تذكرني
         </label>
-        <a href="#" style="font-size:12px;color:var(--black);font-weight:800">نسيت كلمة المرور؟</a>
+        <a href="#" style="font-size:12px;color:var(--black);font-weight:800" onclick="showMo('fp')">نسيت كلمة المرور؟</a>
       </div>
+      <div class="form-alert er" id="login-alert"></div>
       <button class="btn b-k bfw blg" id="l-btn" onclick="doLogin()">تسجيل الدخول</button>
       <div style="margin:15px 0;display:flex;align-items:center;gap:9px">
         <div style="flex:1;height:1px;background:var(--border)"></div>
@@ -251,31 +252,45 @@
      PASSENGER PROFILE
 ════════════════════════════════════════ -->
 <div id="s-pass" class="scr">
-  <nav>
-    <div class="logo" onclick="go('h')"><div class="logo-mark">ر</div><div class="logo-text">رفيق</div></div>
-    <div class="nav-r">
-      <div class="nav-bell" onclick="go('notifs')">🔔<div class="nav-dot" id="p-nd" style="display:none"></div></div>
-      <button class="btn b-g bsm" onclick="go('h')">بحث</button>
+  <!-- Dashboard Header -->
+  <div class="dash-header">
+    <div class="dash-av" id="p-avd">م<div class="dash-vb">✓</div></div>
+    <div class="dash-info">
+      <div class="dash-name" id="p-name">محمد أحمد</div>
+      <div class="dash-role">مسافر موثق ✓</div>
     </div>
-  </nav>
-  <div class="p-hero">
-    <div class="p-av" id="p-avd">م<div class="p-vb">✓</div></div>
-    <div style="font-size:18px;font-weight:900;color:#fff" id="p-name">محمد أحمد</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px">مسافر موثق</div>
+    <div class="dash-bell" onclick="go('notifs')">🔔<div class="nav-dot" id="p-nd" style="display:none"></div></div>
   </div>
-  <div style="padding:14px">
-    <div class="stats-3">
-      <div class="stat"><div class="stat-v" id="p-st1">0</div><div class="stat-l">رحلة محجوزة</div></div>
-      <div class="stat"><div class="stat-v">4.9⭐</div><div class="stat-l">تقييمي</div></div>
-      <div class="stat"><div class="stat-v" id="p-st2">0</div><div class="stat-l">ر.س موفّر</div></div>
+  <div style="padding:14px 14px 0">
+    <!-- Upcoming Trip Widget -->
+    <div id="p-upcoming-widget" style="display:none">
+      <div class="trip-alert-widget">
+        <div class="taw-icon">🚗</div>
+        <div class="taw-info">
+          <div class="taw-title" id="taw-title">رحلة قادمة!</div>
+          <div class="taw-details" id="taw-details">جاري التحميل...</div>
+        </div>
+        <button class="btn bsm" style="background:var(--mint);color:var(--black);font-weight:900" onclick="go('mytrips')">عرض</button>
+      </div>
     </div>
-    <div class="menu-card">
-      <div class="mi" onclick="go('mytrips')"><div class="mi-ic" style="background:#f0f0f0">🗺️</div><div class="mi-tx"><div class="mi-n">رحلاتي المحجوزة</div><div class="mi-s" id="p-h1">جاري التحميل...</div></div><div class="mi-r">›</div></div>
-      <div class="mi" onclick="go('h')"><div class="mi-ic" style="background:#f0faf6">🔍</div><div class="mi-tx"><div class="mi-n">البحث عن رحلة</div><div class="mi-s">اكتشف الرحلات المتاحة</div></div><div class="mi-r">›</div></div>
-      <div class="mi" onclick="go('chat')"><div class="mi-ic" style="background:#fffbf0">💬</div><div class="mi-tx"><div class="mi-n">رسائلي</div><div class="mi-s">محادثاتك مع السائقين</div></div><div class="mi-r"><span class="badge-n" id="p-mb" style="display:none">0</span>›</div></div>
-      <div class="mi" onclick="go('notifs')"><div class="mi-ic" style="background:#f0f0f0">🔔</div><div class="mi-tx"><div class="mi-n">الإشعارات</div><div class="mi-s" id="p-h2">لا توجد إشعارات</div></div><div class="mi-r">›</div></div>
-      <div class="mi"><div class="mi-ic" style="background:#f0f0f0">🎧</div><div class="mi-tx"><div class="mi-n">الدعم الفني</div><div class="mi-s">واتساب · اتصال · دردشة</div></div><div class="mi-r">›</div></div>
-      <div class="mi" onclick="go('pedit')"><div class="mi-ic" style="background:#f0f0f0">👤</div><div class="mi-tx"><div class="mi-n">بياناتي الشخصية</div><div class="mi-s">تعديل معلوماتك</div></div><div class="mi-r">›</div></div>
+    <!-- Stats -->
+    <div class="stats-3">
+      <div class="stat"><div class="stat-v" id="p-st1">0</div><div class="stat-l">رحلة</div></div>
+      <div class="stat"><div class="stat-v">4.9⭐</div><div class="stat-l">تقييمي</div></div>
+      <div class="stat"><div class="stat-v" id="p-st2">0</div><div class="stat-l">موفّر ر.س</div></div>
+    </div>
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="qa-btn" onclick="go('h')"><div class="qa-ic">🔍</div><div class="qa-lb">بحث رحلة</div></div>
+      <div class="qa-btn" onclick="go('mytrips')"><div class="qa-ic">🗺️</div><div class="qa-lb">رحلاتي</div></div>
+      <div class="qa-btn" onclick="go('chat')"><div class="qa-ic">💬</div><div class="qa-lb">الرسائل</div></div>
+      <div class="qa-btn" onclick="go('notifs')"><div class="qa-ic">🔔</div><div class="qa-lb">الإشعارات</div></div>
+    </div>
+    <!-- Menu -->
+    <div class="menu-card" style="margin-bottom:90px">
+      <div class="mi" onclick="go('pedit')"><div class="mi-ic" style="background:#f0f0f0">👤</div><div class="mi-tx"><div class="mi-n">بياناتي الشخصية</div><div class="mi-s" id="p-h1">تعديل معلوماتك</div></div><div class="mi-r">›</div></div>
+      <div class="mi"><div class="mi-ic" style="background:#f0f0f0">🎧</div><div class="mi-tx"><div class="mi-n">الدعم الفني</div><div class="mi-s">واتساب · اتصال</div></div><div class="mi-r">›</div></div>
+      <div class="mi" onclick="go('verify')"><div class="mi-ic" style="background:#f0faf6">🛡️</div><div class="mi-tx"><div class="mi-n">توثيق الحساب</div><div class="mi-s" id="p-h2">رفع الوثائق</div></div><div class="mi-r">›</div></div>
       <div class="mi" onclick="doLogout()"><div class="mi-ic" style="background:#fff0f0">🚪</div><div class="mi-tx"><div class="mi-n" style="color:var(--er)">تسجيل الخروج</div></div></div>
     </div>
   </div>
@@ -304,29 +319,37 @@
      DRIVER PROFILE
 ════════════════════════════════════════ -->
 <div id="s-drv" class="scr">
-  <nav>
-    <div class="logo" onclick="go('h')"><div class="logo-mark">ر</div><div class="logo-text">رفيق</div></div>
-    <div class="nav-r">
-      <div class="nav-bell" onclick="go('notifs')">🔔<div class="nav-dot"></div></div>
-      <button class="btn b-m bsm" onclick="showMo('at')">+ رحلة</button>
+  <!-- Dashboard Header -->
+  <div class="dash-header">
+    <div class="dash-av" id="d-avd">أ<div class="dash-vb">✓</div></div>
+    <div class="dash-info">
+      <div class="dash-name" id="d-name">أحمد الحكيمي</div>
+      <div class="dash-role">سائق موثق ✓</div>
     </div>
-  </nav>
-  <div class="p-hero">
-    <div class="p-av" id="d-avd">أ<div class="p-vb">✓</div></div>
-    <div style="font-size:18px;font-weight:900;color:#fff" id="d-name">أحمد الحكيمي</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px">سائق خاص موثق</div>
+    <div class="dash-bell" onclick="go('notifs')">🔔</div>
   </div>
   <div style="padding:14px">
-    <div class="info info-ok" id="comm-banner" style="display:none;margin-bottom:13px;flex-wrap:wrap;gap:6px">
+    <!-- Earnings Bar -->
+    <div class="earn-bar" style="margin-bottom:13px">
+      <div class="earn-item"><span class="ev" id="d-earn">0</span><span class="el">ر.س الأرباح</span></div>
+      <div class="earn-divider"></div>
+      <div class="earn-item"><span class="ev" id="d-st1">0</span><span class="el">رحلة نشطة</span></div>
+      <div class="earn-divider"></div>
+      <div class="earn-item"><span class="ev" id="d-bk-cnt">0</span><span class="el">حجز جديد</span></div>
+    </div>
+    <!-- Add Trip CTA -->
+    <button class="add-trip-btn" onclick="showMo('at')" style="margin-bottom:14px">
+      <div class="atb-ic">+</div>
+      <div style="text-align:right">
+        <div style="font-size:14px;font-weight:900">إضافة رحلة جديدة</div>
+        <div style="font-size:11px;opacity:.6">انشر رحلتك وابدأ باستقبال الحجوزات</div>
+      </div>
+    </button>
+    <div class="info info-ok" id="comm-banner" style="display:none;margin-bottom:13px;gap:6px">
       <span>🎉</span><div id="comm-txt" style="font-size:12px;font-weight:700"></div>
     </div>
-    <div class="stats-3" style="margin-bottom:13px">
-      <div class="stat"><div class="stat-v" id="d-st1">0</div><div class="stat-l">رحلة نشطة</div></div>
-      <div class="stat"><div class="stat-v">4.8⭐</div><div class="stat-l">التقييم</div></div>
-      <div class="stat"><div class="stat-v" id="d-st3" style="font-size:16px">0</div><div class="stat-l">ر.س أرباح</div></div>
-    </div>
-    <button class="btn b-k bfw" style="padding:14px;margin-bottom:13px;font-size:14px" onclick="showMo('at')">+ إضافة رحلة جديدة</button>
-    <div class="menu-card">
+    <!-- Menu -->
+    <div class="menu-card" style="margin-bottom:90px">
       <div class="mi" onclick="go('dtrips')"><div class="mi-ic" style="background:#f0f0f0">🗺️</div><div class="mi-tx"><div class="mi-n">رحلاتي المنشورة</div><div class="mi-s" id="d-h1">...</div></div><div class="mi-r">›</div></div>
       <div class="mi" onclick="go('earn')"><div class="mi-ic" style="background:#f0faf6">💰</div><div class="mi-tx"><div class="mi-n">الأرباح والمدفوعات</div><div class="mi-s">سحب الأرباح لحسابك البنكي</div></div><div class="mi-r">›</div></div>
       <div class="mi" onclick="go('plist')"><div class="mi-ic" style="background:#fffbf0">👥</div><div class="mi-tx"><div class="mi-n">بيانات الركاب</div><div class="mi-s">أرقام التواصل وتفاصيل الحجوزات</div></div><div class="mi-r">›</div></div>
@@ -573,18 +596,27 @@
 </div>
 
 <!-- ════════════════════════════════════════
-     MODAL: ADD TRIP
+     MODAL: ADD TRIP (3-Step Wizard)
 ════════════════════════════════════════ -->
-<div class="mo-over" id="mo-at-ov" onclick="if(event.target===this)closeMo('at')">
+<div class="mo-over" id="mo-at-ov" onclick="if(event.target===this){closeMo('at');WIZARD.reset()}">
   <div class="mo">
     <div class="mo-h">
-      <div class="mo-t">🚗 إضافة رحلة جديدة</div>
-      <button class="mo-x" onclick="closeMo('at')">✕</button>
+      <div class="mo-t" id="wz-title">🗺️ المسار</div>
+      <button class="mo-x" onclick="closeMo('at');WIZARD.reset()">✕</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <!-- Stepper -->
+    <div class="stepper">
+      <div class="stp active" id="stp-1"><div class="stp-num">1</div><div class="stp-lbl">المسار</div></div>
+      <div class="stp-bar" id="stp-bar-1"></div>
+      <div class="stp" id="stp-2"><div class="stp-num">2</div><div class="stp-lbl">التفاصيل</div></div>
+      <div class="stp-bar" id="stp-bar-2"></div>
+      <div class="stp" id="stp-3"><div class="stp-num">3</div><div class="stp-lbl">التأكيد</div></div>
+    </div>
+    <!-- Step 1: Route -->
+    <div id="wz-s1">
       <div class="fg"><label class="fl">من *</label>
         <div class="city-wrap">
-          <input class="fc" id="at-f-txt" placeholder="المدينة..." autocomplete="off"
+          <input class="fc" id="at-f-txt" placeholder="مدينة الانطلاق..." autocomplete="off"
             oninput="filterDrop(this,'at-f-drop','at-f');validateTripRoute()"
             onfocus="openDrop('at-f-drop')" onblur="setTimeout(()=>closeDrop('at-f-drop'),220)">
           <input type="hidden" id="at-f">
@@ -593,71 +625,86 @@
       </div>
       <div class="fg"><label class="fl">إلى *</label>
         <div class="city-wrap">
-          <input class="fc" id="at-t-txt" placeholder="المدينة..." autocomplete="off"
+          <input class="fc" id="at-t-txt" placeholder="مدينة الوصول..." autocomplete="off"
             oninput="filterDrop(this,'at-t-drop','at-t');validateTripRoute()"
             onfocus="openDrop('at-t-drop')" onblur="setTimeout(()=>closeDrop('at-t-drop'),220)">
           <input type="hidden" id="at-t">
           <div class="city-drop" id="at-t-drop"></div>
         </div>
       </div>
-    </div>
-    <div class="warn-box" id="at-route-warn">⛔ لا يُسمح بالرحلات بين مدن السعودية فقط</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="fg"><label class="fl">التاريخ *</label><input type="date" class="fc" id="at-d"></div>
-      <div class="fg"><label class="fl">الوقت *</label><input type="time" class="fc" id="at-tm" value="07:00"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
-      <div class="fg"><label class="fl">السعر ر.س *</label><input type="number" class="fc" id="at-p" placeholder="300" inputmode="numeric"></div>
-      <div class="fg"><label class="fl">المقاعد</label><input type="number" class="fc" id="at-s" value="4" min="1" max="50" inputmode="numeric"></div>
-      <div class="fg"><label class="fl">النوع</label>
-        <select class="fc" id="at-tp"><option value="car">سيارة</option><option value="bus">باص</option><option value="van">فان</option></select>
+      <div class="warn-box" id="at-route-warn">⛔ لا يُسمح بالرحلات بين مدن السعودية فقط</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">التاريخ *</label><input type="date" class="fc" id="at-d"></div>
+        <div class="fg"><label class="fl">الوقت *</label><input type="time" class="fc" id="at-tm" value="07:00"></div>
       </div>
     </div>
-    <div class="fg"><label class="fl">السيارة</label><input class="fc" id="at-v" placeholder="Toyota Land Cruiser 2022"></div>
-    <div class="fg">
-      <label class="fl">نقطة الالتقاء</label>
-      <div class="meet-tabs">
-        <button class="meet-tab on" id="mt-addr" onclick="setMeetTab('addr')">📍 عنوان</button>
-        <button class="meet-tab" id="mt-link" onclick="setMeetTab('link')">🗺️ رابط خرائط</button>
-        <button class="meet-tab" id="mt-coords" onclick="setMeetTab('coords')">🌐 إحداثيات</button>
-        <button class="meet-tab" id="mt-flex" onclick="setMeetTab('flex')">✏️ نص حر</button>
+    <!-- Step 2: Details -->
+    <div id="wz-s2" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">السعر (ر.س) *</label><input type="number" class="fc" id="at-p" placeholder="300" inputmode="numeric"></div>
+        <div class="fg"><label class="fl">عدد المقاعد *</label><input type="number" class="fc" id="at-s" value="4" min="1" max="50" inputmode="numeric"></div>
       </div>
-      <div id="mp-addr">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <input class="fc" id="at-mp-area" placeholder="الحي / المنطقة">
-          <input type="time" class="fc" id="at-mp-time">
+      <div class="fg"><label class="fl">نوع المركبة</label>
+        <div class="vehicle-types">
+          <button type="button" class="vt-btn on" id="vt-car" onclick="WIZARD.selType('car',this)">🚗<br>سيارة</button>
+          <button type="button" class="vt-btn" id="vt-van" onclick="WIZARD.selType('van',this)">🚐<br>فان</button>
+          <button type="button" class="vt-btn" id="vt-bus" onclick="WIZARD.selType('bus',this)">🚌<br>باص</button>
         </div>
-        <input class="fc" style="margin-top:7px" id="at-mp-addr" placeholder="العنوان التفصيلي...">
+        <input type="hidden" id="at-tp" value="car">
       </div>
-      <div id="mp-link" style="display:none">
-        <input class="fc" id="at-mp-link" placeholder="https://maps.google.com/...">
-        <div id="mp-link-preview" style="display:none;padding:8px;background:var(--mint);border-radius:8px;font-size:12px;margin-top:6px"></div>
-      </div>
-      <div id="mp-coords" style="display:none">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <input class="fc" id="at-mp-lat" placeholder="خط العرض" inputmode="decimal">
-          <input class="fc" id="at-mp-lng" placeholder="خط الطول" inputmode="decimal">
+      <div class="fg"><label class="fl">موديل السيارة</label><input class="fc" id="at-v" placeholder="Toyota Land Cruiser 2022"></div>
+      <div class="fg"><label class="fl">الأمتعة المسموح بها</label>
+        <div class="luggage-opts">
+          <button type="button" class="lg-btn on" onclick="WIZARD.selLuggage('مسموح 20 كجم',this)">20 كجم</button>
+          <button type="button" class="lg-btn" onclick="WIZARD.selLuggage('مسموح 30 كجم',this)">30 كجم</button>
+          <button type="button" class="lg-btn" onclick="WIZARD.selLuggage('حقيبة يد فقط',this)">يد فقط</button>
+          <button type="button" class="lg-btn" onclick="WIZARD.selLuggage('غير مسموح',this)">لا أمتعة</button>
         </div>
-        <button class="btn b-g bfw bsm" style="margin-top:7px" onclick="getMyLocation()">📡 موقعي الحالي</button>
-        <div id="mp-coords-preview" style="display:none;padding:8px;background:var(--mint);border-radius:8px;font-size:12px;margin-top:6px"></div>
-      </div>
-      <div id="mp-flex" style="display:none">
-        <textarea class="fc" id="at-mp-flex" placeholder="اكتب نقطة الالتقاء بحرية..."></textarea>
+        <input type="hidden" id="at-l" value="مسموح 20 كجم">
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <div class="fg"><label class="fl">التوقفات</label><input class="fc" id="at-sp" placeholder="إب، ذمار"></div>
-      <div class="fg"><label class="fl">الأمتعة</label>
-        <select class="fc" id="at-l">
-          <option>مسموح 20 كجم</option><option>مسموح 30 كجم</option>
-          <option>غير مسموح</option><option>حقيبة يد فقط</option>
-        </select>
+    <!-- Step 3: Meet & Confirm -->
+    <div id="wz-s3" style="display:none">
+      <div class="fg"><label class="fl">نقطة الالتقاء</label>
+        <input class="fc" id="at-mp-addr" placeholder="مثال: شارع الزبيري - أمام مسجد الصالح">
       </div>
+      <div class="fg"><label class="fl">التوقفات (اختياري)</label>
+        <input class="fc" id="at-sp" placeholder="مثال: إب، ذمار">
+      </div>
+      <div class="fg"><label class="fl">ملاحظات للركاب (اختياري)</label>
+        <textarea class="fc" id="at-n" rows="2" placeholder="أي معلومات مفيدة..."></textarea>
+      </div>
+      <div class="trip-summary-card" id="wz-summary"></div>
     </div>
-    <div class="fg"><label class="fl">ملاحظات</label><textarea class="fc" id="at-n" placeholder="أي معلومات إضافية..."></textarea></div>
-    <button class="btn b-k bfw blg" id="at-submit-btn" onclick="submitTrip()">🚀 نشر الرحلة</button>
+    <!-- Navigation Buttons -->
+    <div style="display:flex;gap:9px;margin-top:4px">
+      <button class="btn b-g" id="wz-prev" onclick="WIZARD.prev()" style="display:none;padding:13px 16px">← السابق</button>
+      <button class="btn b-k" id="wz-next" onclick="WIZARD.next()" style="flex:1;padding:13px">التالي ←</button>
+    </div>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════
+     MODAL: FORGOT PASSWORD
+════════════════════════════════════════ -->
+<div class="mo-over" id="mo-fp-ov" onclick="if(event.target===this)closeMo('fp')">
+  <div class="mo">
+    <div class="mo-h">
+      <div class="mo-t">🔑 نسيت كلمة المرور</div>
+      <button class="mo-x" onclick="closeMo('fp')">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:14px">أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.</p>
+    <div class="fg"><label class="fl">البريد الإلكتروني *</label>
+      <input class="fc" id="fp-email" type="email" placeholder="example@email.com" inputmode="email">
+    </div>
+    <div class="form-alert ok" id="fp-ok">✅ تم إرسال رابط إعادة التعيين! تفقد صندوق الوارد.</div>
+    <div class="form-alert er" id="fp-err"></div>
+    <button class="btn b-k bfw blg" onclick="doForgotPassword()">إرسال الرابط</button>
+  </div>
+</div>
+
+
+
 
 <!-- ════════════════════════════════════════
      MODAL: RATING
