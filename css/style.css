@@ -266,9 +266,12 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .seat.on{background:var(--black);color:#fff;border-color:var(--black)}
 .seat:active{transform:scale(.93)}
 .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.pay{padding:12px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:.15s;font-size:12px;font-family:'Cairo',sans-serif;font-weight:700;background:#fff}
+.pay{padding:12px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:.15s;font-size:12px;font-family:'Cairo',sans-serif;font-weight:700;background:#fff;position:relative;display:flex;align-items:center;justify-content:center;gap:5px}
 .pay.on{border-color:var(--black);background:var(--black);color:#fff}
 .pay:active{transform:scale(.95)}
+.pay-soon{opacity:.55;cursor:not-allowed;background:#fafafa}
+.pay-soon:active{transform:none}
+.pay-badge{position:absolute;top:-7px;right:-2px;background:var(--warn);color:#fff;font-size:9px;font-weight:900;padding:2px 7px;border-radius:50px;font-family:'Cairo',sans-serif}
 
 /* ═══════════════════════════════════════════
    CHAT
