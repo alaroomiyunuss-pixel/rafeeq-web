@@ -119,10 +119,7 @@ async function init() {
     setDayLabel();
   } catch(e) { console.error('Init failed:', e); }
 
-  setTimeout(() => {
-    const l = $('ldr'); l.classList.add('out');
-    setTimeout(() => l.style.display='none', 460);
-  }, 1400);
+
 
   go('h');
 }
