@@ -374,8 +374,44 @@ function tripCardHTML(t, actions=false) {
   const ver = VERIFIED.has(t.dId);
   const clickAttr = actions ? '' : `data-tripid="${t.id}"`;
   return `
-<div class="tc" ${clickAttr} ${actions ? `onclick="openTripDetail('${t.id}')" style="cursor:pointer"` : ''}>\n  <div class="tc-route">\n    <div class="tc-city">🇾🇪 ${t.from}</div>\n    <div class="tc-line"></div>\n    <div class="tc-city arr">🇸🇦 ${t.to}</div>\n    <div class="tc-badge">${lbl}</div>\n  </div>\n  <div class="tc-meta">\n    <span class="mc">📅 ${df}</span>\n    <span class="mc">🕐 ${t.time}</span>\n    <span class="mc">💺 ${t.seats}/${t.total}</span>\n    ${t.stops?`<span class="mc">📍 ${t.stops}</span>`:''}\n    ${t.luggage?`<span class="mc">🧳 ${t.luggage}</span>`:''}\n  </div>\n  <div class="tc-foot">\n    <div class="drv-row">\n      <div class="drv-av">${(t.driver||'س')[0]}</div>\n      <div>\n        <div style="font-size:12px;font-weight:800">${t.driver||'السائق'} ${ver?'<span style="color:var(--ok);font-size:10px;font-weight:900">✓ موثق</span>':''}</div>\n        <div style="font-size:11px;color:var(--sub)">${t.vehicle||''} · ${str} (${t.rating||0})</div>\n      </div>\n    </div>\n    <div style="text-align:left">\n      <div style="font-size:19px;font-weight:900">${t.price} <span style="font-size:11px;font-weight:700;color:var(--sub)">ر.س</span></div>\n      ${actions\n        ? `<div style="display:flex;gap:5px;margin-top:5px">\n             <button class="btn b-g bsm" onclick="event.stopPropagation();editTrip('${t.id}')" style="font-size:10px" type="button">✏️</button>\n             <button class="btn b-er bsm" onclick="event.stopPropagation();delTrip('${t.id}')" style="font-size:10px" type="button">🗑️</button>\n           </div>`\n        : '<div style="font-size:10px;color:var(--ok);font-weight:800;margin-top:2px">احجز الآن ›</div>'\n      }\n    </div>\n  </div>\n  ${actions ? `<div style="border-top:1px solid var(--bg);margin-top:10px;padding-top:9px;display:flex;align-items:center;justify-content:space-between">\n    <div style="font-size:11px;color:var(--sub);font-weight:700">اضغط لعرض الحاجزين</div>\n    <div style="font-size:12px;font-weight:900;color:var(--ok)">👥 ${(t.total||0)-(t.seats||0)} حاجز ›</div>\n  </div>` : ''}\n</div>`;
-
+<div class="tc" ${clickAttr} ${actions ? `onclick="openTripDetail('${t.id}')" style="cursor:pointer"` : ''}>
+  <div class="tc-route">
+    <div class="tc-city">🇾🇪 ${t.from}</div>
+    <div class="tc-line"></div>
+    <div class="tc-city arr">🇸🇦 ${t.to}</div>
+    <div class="tc-badge">${lbl}</div>
+  </div>
+  <div class="tc-meta">
+    <span class="mc">📅 ${df}</span>
+    <span class="mc">🕐 ${t.time}</span>
+    <span class="mc">💺 ${t.seats}/${t.total}</span>
+    ${t.stops?`<span class="mc">📍 ${t.stops}</span>`:''}
+    ${t.luggage?`<span class="mc">🧳 ${t.luggage}</span>`:''}
+  </div>
+  <div class="tc-foot">
+    <div class="drv-row">
+      <div class="drv-av">${(t.driver||'س')[0]}</div>
+      <div>
+        <div style="font-size:12px;font-weight:800">${t.driver||'السائق'} ${ver?'<span style="color:var(--ok);font-size:10px;font-weight:900">✓ موثق</span>':''}</div>
+        <div style="font-size:11px;color:var(--sub)">${t.vehicle||''} · ${str} (${t.rating||0})</div>
+      </div>
+    </div>
+    <div style="text-align:left">
+      <div style="font-size:19px;font-weight:900">${t.price} <span style="font-size:11px;font-weight:700;color:var(--sub)">ر.س</span></div>
+      ${actions
+        ? `<div style="display:flex;gap:5px;margin-top:5px">
+             <button class="btn b-g bsm" onclick="event.stopPropagation();editTrip('${t.id}')" style="font-size:10px" type="button">✏️</button>
+             <button class="btn b-er bsm" onclick="event.stopPropagation();delTrip('${t.id}')" style="font-size:10px" type="button">🗑️</button>
+           </div>`
+        : '<div style="font-size:10px;color:var(--ok);font-weight:800;margin-top:2px">احجز الآن ›</div>'
+      }
+    </div>
+  </div>
+  ${actions ? `<div style="border-top:1px solid var(--bg);margin-top:10px;padding-top:9px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:11px;color:var(--sub);font-weight:700">اضغط لعرض الحاجزين</div>
+    <div style="font-size:12px;font-weight:900;color:var(--ok)">👥 ${(t.total||0)-(t.seats||0)} حاجز ›</div>
+  </div>` : ''}
+</div>`;
 }
 
 document.addEventListener('click', function(e) {
