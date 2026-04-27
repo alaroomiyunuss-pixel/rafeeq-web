@@ -300,7 +300,12 @@ async function doForgotPassword() {
    UI UPDATE
 ══════════════════════════════════════ */
 function updateUI() {
-  if (!S.user) return;
+  const qtb = $('quick-test-banner');
+  if (!S.user) {
+    if (qtb) qtb.style.display = 'block';
+    return;
+  }
+  if (qtb) qtb.style.display = 'none';
   const n = S.user.name||'م', i = n[0]||'م';
   setText('p-avd', i+'<div class="dash-vb">✓</div>');
   setText('d-avd', i+'<div class="dash-vb">✓</div>');
@@ -372,40 +377,8 @@ function tripCardHTML(t, actions=false) {
   const ver = VERIFIED.has(t.dId);
   const clickAttr = actions ? '' : `data-tripid="${t.id}"`;
   return `
-<div class="tc" ${clickAttr}>
-  <div class="tc-route">
-    <div class="tc-city">🇾🇪 ${t.from}</div>
-    <div class="tc-line"></div>
-    <div class="tc-city arr">🇸🇦 ${t.to}</div>
-    <div class="tc-badge">${lbl}</div>
-  </div>
-  <div class="tc-meta">
-    <span class="mc">📅 ${df}</span>
-    <span class="mc">🕐 ${t.time}</span>
-    <span class="mc">💺 ${t.seats}/${t.total}</span>
-    ${t.stops?`<span class="mc">📍 ${t.stops}</span>`:''}
-    ${t.luggage?`<span class="mc">🧳 ${t.luggage}</span>`:''}
-  </div>
-  <div class="tc-foot">
-    <div class="drv-row">
-      <div class="drv-av">${(t.driver||'س')[0]}</div>
-      <div>
-        <div style="font-size:12px;font-weight:800">${t.driver||'السائق'} ${ver?'<span style="color:var(--ok);font-size:10px;font-weight:900">✓ موثق</span>':''}</div>
-        <div style="font-size:11px;color:var(--sub)">${t.vehicle||''} · ${str} (${t.rating||0})</div>
-      </div>
-    </div>
-    <div style="text-align:left">
-      <div style="font-size:19px;font-weight:900">${t.price} <span style="font-size:11px;font-weight:700;color:var(--sub)">ر.س</span></div>
-      ${actions
-        ? `<div style="display:flex;gap:5px;margin-top:5px">
-             <button class="btn b-g bsm" onclick="editTrip('${t.id}')" style="font-size:10px" type="button">✏️</button>
-             <button class="btn b-er bsm" onclick="delTrip('${t.id}')" style="font-size:10px" type="button">🗑️</button>
-           </div>`
-        : '<div style="font-size:10px;color:var(--ok);font-weight:800;margin-top:2px">احجز الآن ›</div>'
-      }
-    </div>
-  </div>
-</div>`;
+<div class="tc" ${clickAttr} ${actions ? `onclick="openTripDetail('${t.id}')" style="cursor:pointer"` : ''}>\n  <div class="tc-route">\n    <div class="tc-city">🇾🇪 ${t.from}</div>\n    <div class="tc-line"></div>\n    <div class="tc-city arr">🇸🇦 ${t.to}</div>\n    <div class="tc-badge">${lbl}</div>\n  </div>\n  <div class="tc-meta">\n    <span class="mc">📅 ${df}</span>\n    <span class="mc">🕐 ${t.time}</span>\n    <span class="mc">💺 ${t.seats}/${t.total}</span>\n    ${t.stops?`<span class="mc">📍 ${t.stops}</span>`:''}\n    ${t.luggage?`<span class="mc">🧳 ${t.luggage}</span>`:''}\n  </div>\n  <div class="tc-foot">\n    <div class="drv-row">\n      <div class="drv-av">${(t.driver||'س')[0]}</div>\n      <div>\n        <div style="font-size:12px;font-weight:800">${t.driver||'السائق'} ${ver?'<span style="color:var(--ok);font-size:10px;font-weight:900">✓ موثق</span>':''}</div>\n        <div style="font-size:11px;color:var(--sub)">${t.vehicle||''} · ${str} (${t.rating||0})</div>\n      </div>\n    </div>\n    <div style="text-align:left">\n      <div style="font-size:19px;font-weight:900">${t.price} <span style="font-size:11px;font-weight:700;color:var(--sub)">ر.س</span></div>\n      ${actions\n        ? `<div style="display:flex;gap:5px;margin-top:5px">\n             <button class="btn b-g bsm" onclick="event.stopPropagation();editTrip('${t.id}')" style="font-size:10px" type="button">✏️</button>\n             <button class="btn b-er bsm" onclick="event.stopPropagation();delTrip('${t.id}')" style="font-size:10px" type="button">🗑️</button>\n           </div>`\n        : '<div style="font-size:10px;color:var(--ok);font-weight:800;margin-top:2px">احجز الآن ›</div>'\n      }\n    </div>\n  </div>\n  ${actions ? `<div style="border-top:1px solid var(--bg);margin-top:10px;padding-top:9px;display:flex;align-items:center;justify-content:space-between">\n    <div style="font-size:11px;color:var(--sub);font-weight:700">اضغط لعرض الحاجزين</div>\n    <div style="font-size:12px;font-weight:900;color:var(--ok)">👥 ${(t.total||0)-(t.seats||0)} حاجز ›</div>\n  </div>` : ''}\n</div>`;
+
 }
 
 document.addEventListener('click', function(e) {
@@ -415,6 +388,83 @@ document.addEventListener('click', function(e) {
   const trip = (window._tripsMap||{})[id] || S.trips.find(t=>t.id===id);
   if (trip) openBk(trip);
 });
+
+async function openTripDetail(tripId) {
+  const trip = S.trips.find(t=>t.id===tripId); if(!trip) return;
+  const all = await DB.getAll('bookings');
+  const bks = all.filter(b=>b.tripId===tripId);
+  const booked = (trip.total||0) - (trip.seats||0);
+  const earned = bks.filter(b=>b.status!=='cancelled').reduce((s,b)=>s+(b.price||0),0);
+  const df = trip.date ? new Date(trip.date+'T00:00').toLocaleDateString('ar-SA',{weekday:'long',day:'numeric',month:'long'}) : '';
+  const pct = trip.total ? Math.round(booked/trip.total*100) : 0;
+  const pColor = pct>=100?'var(--er)':pct>=70?'var(--warn)':'var(--ok)';
+
+  const passHTML = bks.length ? bks.map(b=>{
+    const sc = b.status==='upcoming'?'b-ok':b.status==='cancelled'?'b-er':'b-pen';
+    const sl = b.status==='upcoming'?'قادمة':b.status==='completed'?'منجزة':'ملغاة';
+    return `<div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:9px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--mint);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0">${(b.pid||'م')[0]}</div>
+          <div>
+            <div style="font-size:13px;font-weight:900">${b.pid||'مسافر'}</div>
+            <div style="font-size:10px;color:var(--sub)">${b.id}</div>
+          </div>
+        </div>
+        <span class="${sc}">${sl}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
+        <div style="background:var(--bg);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:10px;color:var(--sub);font-weight:700">المقاعد</div>
+          <div style="font-size:15px;font-weight:900">💺 ${b.seats}</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:10px;color:var(--sub);font-weight:700">المبلغ</div>
+          <div style="font-size:13px;font-weight:900;color:var(--ok)">${b.price} ر.س</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:10px;color:var(--sub);font-weight:700">الدفع</div>
+          <div style="font-size:11px;font-weight:900">${b.payment||'كاش'}</div>
+        </div>
+      </div>
+      ${b.coupon?`<div style="margin-top:7px;font-size:11px;color:var(--ok);font-weight:700">🎁 كود: ${b.coupon}</div>`:''}
+    </div>`;
+  }).join('') : '<div class="empty" style="padding:22px 0"><div class="empty-i">👥</div><p>لا يوجد حاجزون بعد</p></div>';
+
+  setText('td-content', `
+    <div style="background:linear-gradient(135deg,var(--black),#1a2a3a);border-radius:14px;padding:16px;margin-bottom:14px;color:#fff">
+      <div style="font-size:15px;font-weight:900;margin-bottom:5px">🇾🇪 ${trip.from} → ${trip.to} 🇸🇦</div>
+      <div style="font-size:12px;opacity:.65;margin-bottom:13px">📅 ${df} · 🕐 ${trip.time} · ${trip.vehicle||''}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px">
+          <div style="font-size:20px;font-weight:900">${booked}</div>
+          <div style="font-size:10px;opacity:.7">حاجز</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px">
+          <div style="font-size:20px;font-weight:900">${trip.seats}</div>
+          <div style="font-size:10px;opacity:.7">متبقي</div>
+        </div>
+        <div style="background:rgba(178,240,232,.15);border-radius:10px;padding:10px">
+          <div style="font-size:20px;font-weight:900;color:var(--mint)">${earned}</div>
+          <div style="font-size:10px;opacity:.7">ر.س</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:11px;padding:12px;margin-bottom:14px;border:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <div style="font-size:12px;font-weight:800">امتلاء الرحلة</div>
+        <div style="font-size:12px;font-weight:900;color:${pColor}">${pct}%</div>
+      </div>
+      <div style="height:9px;background:var(--bg);border-radius:50px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${pColor};border-radius:50px;transition:.4s"></div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:900;margin-bottom:10px">👥 الحاجزون (${bks.length})</div>
+    ${passHTML}
+  `);
+  showMo('td');
+}
+
 
 /* ══════════════════════════════════════
    CITY DROPDOWNS
